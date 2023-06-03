@@ -506,7 +506,7 @@ class GaussianDiffusion:
         cond_fn=None,
         model_kwargs=None,
         device=None,
-        progress=False,
+        progress=None,
         temp=1.0,
     ):
         """
@@ -554,7 +554,7 @@ class GaussianDiffusion:
         cond_fn=None,
         model_kwargs=None,
         device=None,
-        progress=False,
+        progress=None,
         temp=1.0,
     ):
         """
@@ -574,11 +574,8 @@ class GaussianDiffusion:
             img = th.randn(*shape, device=device) * temp
         indices = list(range(self.num_timesteps))[::-1]
 
-        if progress:
-            # Lazy import so that we don't depend on tqdm.
-            from tqdm.auto import tqdm
-
-            indices = tqdm(indices)
+        if progress is not None:
+            indices = progress(indices)
 
         for i in indices:
             t = th.tensor([i] * shape[0], device=device)
@@ -693,7 +690,7 @@ class GaussianDiffusion:
         cond_fn=None,
         model_kwargs=None,
         device=None,
-        progress=False,
+        progress=None,
         eta=0.0,
         temp=1.0,
     ):
@@ -729,7 +726,7 @@ class GaussianDiffusion:
         cond_fn=None,
         model_kwargs=None,
         device=None,
-        progress=False,
+        progress=None,
         eta=0.0,
         temp=1.0,
     ):
@@ -748,11 +745,8 @@ class GaussianDiffusion:
             img = th.randn(*shape, device=device) * temp
         indices = list(range(self.num_timesteps))[::-1]
 
-        if progress:
-            # Lazy import so that we don't depend on tqdm.
-            from tqdm.auto import tqdm
-
-            indices = tqdm(indices)
+        if progress is not None:
+            indices = progress(indices)
 
         for i in indices:
             t = th.tensor([i] * shape[0], device=device)

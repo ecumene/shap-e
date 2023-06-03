@@ -2,6 +2,7 @@ from typing import Any, Callable, Dict, Optional
 
 import torch
 import torch.nn as nn
+from tqdm.auto import tqdm
 
 from .gaussian_diffusion import GaussianDiffusion
 from .k_diffusion import karras_sample
@@ -43,6 +44,7 @@ def sample_latents(
     sigma_max: float,
     s_churn: float,
     device: Optional[torch.device] = None,
+    progress_fn: Optional[Callable[[Any], Any]] = None,
     progress: bool = False,
 ) -> torch.Tensor:
     sample_shape = (batch_size, model.d_latent)
@@ -55,6 +57,9 @@ def sample_latents(
     if guidance_scale != 1.0 and guidance_scale != 0.0:
         for k, v in model_kwargs.copy().items():
             model_kwargs[k] = torch.cat([v, torch.zeros_like(v)], dim=0)
+
+    if progress and progress_fn is None:
+        progress_fn = tqdm
 
     sample_shape = (batch_size, model.d_latent)
     with torch.autocast(device_type=device.type, enabled=use_fp16):
@@ -71,7 +76,7 @@ def sample_latents(
                 sigma_max=sigma_max,
                 s_churn=s_churn,
                 guidance_scale=guidance_scale,
-                progress=progress,
+                progress=progress_fn,
             )
         else:
             internal_batch_size = batch_size
@@ -84,7 +89,7 @@ def sample_latents(
                 model_kwargs=model_kwargs,
                 device=device,
                 clip_denoised=clip_denoised,
-                progress=progress,
+                progress=progress_fn,
             )
 
     return samples

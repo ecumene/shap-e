@@ -121,7 +121,7 @@ def karras_sample_progressive(
     shape,
     steps,
     clip_denoised=True,
-    progress=False,
+    progress=None,
     model_kwargs=None,
     device=None,
     sigma_min=0.002,
@@ -214,14 +214,12 @@ def get_ancestral_step(sigma_from, sigma_to):
 
 
 @th.no_grad()
-def sample_euler_ancestral(model, x, sigmas, progress=False):
+def sample_euler_ancestral(model, x, sigmas, progress=None):
     """Ancestral sampling with Euler method steps."""
     s_in = x.new_ones([x.shape[0]])
     indices = range(len(sigmas) - 1)
-    if progress:
-        from tqdm.auto import tqdm
-
-        indices = tqdm(indices)
+    if progress is not None:
+        indices = progress(indices)
 
     for i in indices:
         denoised = model(x, sigmas[i] * s_in)
@@ -240,7 +238,7 @@ def sample_heun(
     denoiser,
     x,
     sigmas,
-    progress=False,
+    progress=None,
     s_churn=0.0,
     s_tmin=0.0,
     s_tmax=float("inf"),
@@ -249,10 +247,8 @@ def sample_heun(
     """Implements Algorithm 2 (Heun steps) from Karras et al. (2022)."""
     s_in = x.new_ones([x.shape[0]])
     indices = range(len(sigmas) - 1)
-    if progress:
-        from tqdm.auto import tqdm
-
-        indices = tqdm(indices)
+    if progress is not None:
+        indices = progress(indices)
 
     for i in indices:
         gamma = (
@@ -284,7 +280,7 @@ def sample_dpm(
     denoiser,
     x,
     sigmas,
-    progress=False,
+    progress=None,
     s_churn=0.0,
     s_tmin=0.0,
     s_tmax=float("inf"),
@@ -293,10 +289,8 @@ def sample_dpm(
     """A sampler inspired by DPM-Solver-2 and Algorithm 2 from Karras et al. (2022)."""
     s_in = x.new_ones([x.shape[0]])
     indices = range(len(sigmas) - 1)
-    if progress:
-        from tqdm.auto import tqdm
-
-        indices = tqdm(indices)
+    if progress is not None:
+        indices = progress(indices)
 
     for i in indices:
         gamma = (
