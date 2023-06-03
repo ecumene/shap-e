@@ -14,6 +14,7 @@ setup(
         "shap_e.models.transmitter",
         "shap_e.rendering",
         "shap_e.rendering.blender",
+        "shap_e.rendering.raycast",
         "shap_e.util",
     ],
     install_requires=[
@@ -28,6 +29,7 @@ setup(
         "scikit-image",
         "scipy",
         "numpy",
+        "blobfile",
         "clip @ git+https://github.com/openai/CLIP.git",
     ],
     author="OpenAI",
